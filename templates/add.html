@@ -9,10 +9,12 @@
             <div>
 
                 <div class = "mb-3">
+                    <label for="task" class="form-label">Task name</label>
                     <input type="text" class = "form-control" autocomplete="off" name="task" placeholder="Task name">
                 </div>
                 
                 <div class = "mb-3">
+                    <label for="notes" class="form-label">Notes</label>
                     <input type="text" class = "form-control" autocomplete="off" name="notes" placeholder="Notes">
                 </div>
 
@@ -25,7 +27,10 @@
                     <label for="time" class="form-label">Time</label>
                     <input type="time" class = "form-control" autocomplete="off" name="deadline_time" placeholder="Time">
                 </div>
-        
+                <div class = "mb-3">
+                    <label for="status" class="form-label">Status</label>
+                </div>
+
                 <input type="radio" id="not_started" name="status" value="not_started">
                 <label for="not_started">Not started</label><br>
                 <input type="radio" id="in_process" name="status" value="in_process">

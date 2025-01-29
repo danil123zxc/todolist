@@ -7,13 +7,25 @@ from sqlalchemy import or_
 from flask_migrate import Migrate
 from helper import is_valid_date
 
+#CS50 Final Project
+
+#Ten Danil from Moscow, Russia
+
+#Github: danilten123zxc
+
+#edx username: daniltenzxc123
+
+#Today is 2025-01-29
+
+
 app = Flask(__name__)
+
 # Connecting to the database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///todolist.db'
 # Turn off modification notifications
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-#Configure session to use filesystem
+# Configure session to use filesystem
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config["SESSION_PERMANENT"] = False
 Session(app)
@@ -22,6 +34,7 @@ Session(app)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
+# User model
 class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -30,6 +43,7 @@ class User(db.Model):
     email = db.Column(db.String(100), nullable=False, unique=True)
     tasks = db.relationship('Task', backref='user', lazy=True)
 
+# Task model
 class Task(db.Model):
     __tablename__ = 'tasks'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -42,8 +56,7 @@ class Task(db.Model):
     deadline_date = db.Column(db.String(50))
     deadline_time = db.Column(db.String(50))
 
-
-    
+# Route for the main page
 @app.route('/')
 def index():
     # Main page with current user's todo list
@@ -53,11 +66,12 @@ def index():
     name = db.session.execute(db.select(User).filter_by(id=session["user_id"])).scalar_one()
     tasks = db.session.execute(db.select(Task).filter_by(user_id=session["user_id"])).scalars().all()
     db.session.commit() 
-    return render_template('index.html', name = name.username, tasks=tasks)
+    return render_template('index.html', name=name.username, tasks=tasks)
 
+# Route for login page
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    #Login page
+    # Login page
     session.clear()
     if request.method == "POST":
         username_or_email = request.form.get('username')
@@ -72,23 +86,22 @@ def login():
 
     return render_template('login.html')
 
+# Route for registration page
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     # Registration page
     session.clear()
     if request.method == "POST":
         username = request.form.get('username')
-        #Making email adress from username and server
+        # Making email address from username and server
         name = request.form.get('email')
         server = request.form.get('server')
-        try:
-            email = name + '@' + server
-        except:
+        if not name or not server:
             return render_template('register.html', message='Invalid email')
+        email = name + '@' + server
         
         password = request.form.get('password')
         confirm_password = request.form.get('confirm_password')
-
 
         # Checking if passwords match
         if password != confirm_password:
@@ -107,6 +120,7 @@ def register():
         return redirect('/')
     return render_template('register.html')
 
+# Route for adding a new task
 @app.route('/add', methods=['GET', 'POST'])
 def add():
     # Adding new task
@@ -114,7 +128,7 @@ def add():
         task = request.form.get('task')
         notes = request.form.get('notes')
         status = request.form.get('status')
-        #Current date and time
+        # Current date and time
         dt = datetime.now()
         date = dt.date()
         time = dt.strftime("%H:%M")
@@ -123,7 +137,7 @@ def add():
         deadline_time = request.form.get('deadline_time')
 
         if is_valid_date(deadline_date, deadline_time) == False:
-                return render_template('add.html', message='Invalid date or time')
+            return render_template('add.html', message='Invalid date or time')
         
         user_id = session['user_id']
         try:    
@@ -138,27 +152,24 @@ def add():
         return redirect('/')
     return render_template('add.html')
 
+# Route for editing a task
 @app.route('/edit/<int:task_id>', methods=['GET', 'POST'])
 def edit(task_id):
     task = db.session.execute(db.select(Task).filter_by(id=task_id, user_id=session["user_id"])).scalar_one()
     if request.method == 'POST':
-
         deadline_date = request.form['deadline_date']
         deadline_time = request.form['deadline_time']
         task.task = request.form['task']
         
-
         dt = datetime.now()
         date = dt.date()
         time = dt.strftime("%H:%M")
-
 
         if deadline_date and deadline_time:
             if is_valid_date(deadline_date, deadline_time) == False:
                 return render_template('edit.html', task=task, message='Invalid date or time')
             task.deadline_date = deadline_date
             task.deadline_time = deadline_time
-
 
         task.date = date
         task.time = time
@@ -168,6 +179,7 @@ def edit(task_id):
         return redirect('/')
     return render_template('edit.html', task=task)
 
+# Route for changing password
 @app.route('/changepwd', methods=['GET', 'POST'])
 def changepwd():
     if request.method == 'POST':
@@ -184,6 +196,7 @@ def changepwd():
         return redirect('/')
     return render_template('changepwd.html')
 
+# Route for deleting a task
 @app.route('/delete/<int:task_id>', methods=['POST'])
 def delete(task_id):
     task = db.session.execute(db.select(Task).filter_by(id=task_id, user_id=session["user_id"])).scalar_one()
@@ -191,6 +204,7 @@ def delete(task_id):
     db.session.commit()
     return redirect('/')
 
+# Route for logging out
 @app.route('/logout')
 def logout():
     session.clear()
