@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block title %}Adding new task {% endblock %}
+
+{% block main %}
+    <div class="container">
+        <h1>Edit Task</h1>
+        <form action="/edit/{{ task.id }}" method="POST">
+            <div class="mb-3">
+                <label for="task" class="form-label">Task</label>
+                <input type="text" class="form-control" id="task" name="task" value="{{ task.task }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="notes" class="form-label">Notes</label>
+                <textarea class="form-control" id="notes" name="notes">{{ task.notes }}</textarea>
+            </div>
+            <div class="mb-3">
+                <label for="deadline_date" class="form-label">Date</label>
+                <input type="date" class="form-control" id="deadline_date" name="deadline_date" value="{{ task.deadline_date }}">
+            </div>
+            <div class="mb-3">
+                <label for="deadline_time" class="form-label">Time</label>
+                <input type="time" class="form-control" id="deadline_time" name="deadline_time" value="{{ task.deadline_time }}">
+            </div>
+            <div class="mb-3">
+                <label for="status" class="form-label">Status</label><br>
+                <input type="radio" id="not_started" name="status" value="not_started" {% if task.status == 'not_started' %}checked{% endif %}>
+                <label for="not_started">Not started</label><br>
+                <input type="radio" id="in_process" name="status" value="in_process" {% if task.status == 'in_process' %}checked{% endif %}>
+                <label for="in_process">In process</label><br>
+                <input type="radio" id="done" name="status" value="done" {% if task.status == 'done' %}checked{% endif %}>
+                <label for="done">Done</label><br><br>
+            </div>
+  
+            <button type="submit" class="btn btn-primary btn-lg">Save</button>
+        </form>
+        <form action="/delete/{{ task.id }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this task?');">
+            <button type="submit" class="btn btn-danger btn-lg">Delete</button>
+        </form>
+    </div>
+
+{% endblock %}

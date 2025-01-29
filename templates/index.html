@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Todo list
+{% endblock %}
+
+{% block header %}
+    <h1 id="table-title">Hello, {{ name }}</h1>
+{% endblock %}
+
+{% block main %}
+    <!-- Header of current user's todo list
+    The current user's todo list
+    Todo list has user's tasks, date, time, notes, and status 
+    CRUD operations for todo list -->
+
+    <div class="mt-4">
+        <table class="table table-striped-columns w-50 mx-auto">
+            <tr>
+                <th>Task</th>
+                <th>Status</th>
+                <th>Notes</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Last change date</th>
+                <th>Last change time</th>
+                <th>Actions</th>
+            </tr>
+            {% for task in tasks %}
+                <tr>
+                    <td>{{ task.task }}</td>
+                    <td>{{ task.status }}</td>
+                    <td>{{ task.notes }}</td>
+                    <td> {% if task.deadline_date == None %}
+                        -
+                        {% else %}
+                        {{ task.deadline_date }}
+                        {% endif %}
+                    </td>
+                    <td>{% if task.deadline_time == None %}
+                        -
+                        {% else %}
+                        {{ task.deadline_time }}
+                        {% endif %}
+                    </td>
+                    <td>{{ task.date }}</td>
+                    <td>{{ task.time }}</td>
+                    <td><a href="/edit/{{ task.id }}" class="btn btn-primary">Change</a></td>
+                </tr>
+            {% endfor %}
+        </table>
+        <div class="d-flex justify-content-end w-50 mx-auto">
+            <a href="/add" class="btn btn-success">Add</a>
+        </div>
+    </div>
+{% endblock %}
